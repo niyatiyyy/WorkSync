@@ -74,46 +74,52 @@ WorkSync is built as a lightweight, locally executed desktop application paired 
 
 System Architecture
 
-+-------------------------------------------------------------+
-|                     Local Environment                       |
-|                                                             |
-|  Keyboard / Mouse Activity                                  |
-|         │                                                   |
-|         ▼                                                   |
-|  pynput Tracker (tracker.py)                                |
-|         │                                                   |
-|         ▼                                                   |
-|  Activity Metrics (WPM, Corrections, Clicks, Movement)      |
-|         │                                                   |
-|         ▼                                                   |
-|  Personal Baseline & SQLite Database (database.py)          |
-|         │                                                   |
-|         ▼                                                   |
-|  Rule-Based Detector (detector.py)                          |
-|         │                                                   |
-|         ▼                                                   |
-|  Fatigue-Risk Indicator & Intervention Thresholds           |
-|         │                                                   |
-|         ▼                                                   |
-|  Flask Web Server (app.py) ────► Local Dashboard (Browser) |
-|                                       │                     |
-|                                       ▼                     |
-|                                Guided Recovery              |
-|                                       │                     |
-|                                       ▼                     |
-|                               Recovery Comparison           |
-+-------------------------------------------------------------+
+### System Architecture
+
+```text
++---------------------------------------------------------------+
+|                        Local Environment                      |
+|                                                               |
+|   Keyboard / Mouse Activity                                   |
+|            |                                                  |
+|            v                                                  |
+|   pynput Tracker (tracker.py)                                 |
+|            |                                                  |
+|            v                                                  |
+|   Activity Metrics (WPM, Corrections, Clicks, Movement)       |
+|            |                                                  |
+|            v                                                  |
+|   Personal Baseline & SQLite Database (database.py)           |
+|            |                                                  |
+|            v                                                  |
+|   Rule-Based Detector (detector.py)                            |
+|            |                                                  |
+|            v                                                  |
+|   Fatigue-Risk Indicator & Intervention Thresholds            |
+|            |                                                  |
+|            v                                                  |
+|   Flask Web Server (app.py)                                   |
+|            |                                                  |
+|            v                                                  |
+|   Local Dashboard (Browser)                                   |
+|            |                                                  |
+|            v                                                  |
+|   Guided Recovery → Recovery Comparison                       |
++---------------------------------------------------------------+
+```
 
 Technology Stack
 
-Technology	Purpose
+### Technology Stack
 
-Python	Core application logic, metric aggregation, and risk scoring
-Flask	Local web application server providing UI routes and API endpoints
-pynput	Keyboard and mouse event monitoring
-SQLite	Local storage for activity samples and baseline data
-HTML5 / CSS3	Dashboard structure, layout, and visual styling
-JavaScript	Periodic metric polling, timers, and client-side page updates
+| Technology | Purpose |
+|---|---|
+| Python | Core application logic, metric aggregation, and risk scoring |
+| Flask | Local web application server, UI routes, and API endpoints |
+| pynput | Keyboard and mouse event monitoring |
+| SQLite | Local storage for activity samples and baseline data |
+| HTML / CSS | Dashboard structure and styling |
+| JavaScript | Periodic metric polling, timers, and client-side page updates |
 
 
 Because pynput monitors local operating-system input events, the application is designed to run on the local machine where the user's keyboard and mouse are being used.
@@ -139,34 +145,39 @@ The score is based on four behavioral factors relative to the user's baseline:
 
 Indicator Thresholds
 
-Score Range	Risk Level	System Action
+### Indicator Thresholds
 
-0–29	Normal	Normal activity monitoring
-30–59	Mild	Activity changes are indicated
-60–79	Elevated	Break recommendation is shown
-80–100	High	Break recommendation is shown
+| Score Range | Risk Level | System Action |
+|---|---|---|
+| 0–29 | Normal | Normal activity monitoring |
+| 30–59 | Mild | Activity changes are indicated |
+| 60–79 | Elevated | Break recommendation is shown |
+| 80–100 | High | Break recommendation is shown |
 
-
-These thresholds are experimental prototype parameters and are not medical or clinical standards.
+> These thresholds are experimental prototype parameters and are not medical or clinical standards.
 
 Project Structure
 
+### Project Structure
+
+```text
 WorkSync/
-├── app.py              # Flask server, route definitions, and API endpoints
-├── tracker.py          # pynput input monitoring and metric calculation
-├── detector.py         # Rule-based risk scoring and baseline comparison
-├── database.py         # SQLite database setup and data handling
-├── requirements.txt    # Python dependencies
-├── LICENSE             # Open-source MIT License
-├── README.md           # Project documentation
+├── app.py
+├── tracker.py
+├── detector.py
+├── database.py
+├── requirements.txt
+├── LICENSE
+├── README.md
 ├── templates/
-│   ├── dashboard.html  # Main monitoring dashboard
-│   ├── break.html      # 60-second guided recovery timer
-│   ├── recovery.html   # Post-break activity comparison
-│   └── history.html    # Saved activity sample history
+│   ├── dashboard.html
+│   ├── break.html
+│   ├── recovery.html
+│   └── history.html
 └── static/
-    ├── style.css       # Dashboard and application styling
-    └── script.js       # Client-side polling and page updates
+    ├── style.css
+    └── script.js
+```
 
 Module Responsibilities
 
