@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WorkSync - Recovery Break</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="break-card">
+
+        <div class="break-icon">
+            🌿
+        </div>
+
+        <h1>Time for a Recovery Break</h1>
+
+        <p class="break-message">
+            Your recent activity differs from your usual pattern.
+            A short recovery break may help.
+        </p>
+
+        <div class="timer" id="timer">
+            60
+        </div>
+
+        <p class="instruction" id="instruction">
+            Step away from the screen and relax your eyes.
+        </p>
+
+        <button id="startButton" onclick="startBreak()">
+            Start Break
+        </button>
+
+        <button id="skipButton" onclick="skipBreak()">
+            Remind Me Later
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let timeLeft = 60;
+let timerInterval = null;
+
+
+function startBreak() {
+
+    document.getElementById("startButton").disabled = true;
+
+    timerInterval = setInterval(function() {
+
+        timeLeft--;
+
+        document.getElementById("timer").textContent =
+            timeLeft;
+
+
+        if (timeLeft === 45) {
+
+            document.getElementById("instruction").textContent =
+                "Look away from the screen and focus on something in the distance.";
+        }
+
+
+        if (timeLeft === 30) {
+
+            document.getElementById("instruction").textContent =
+                "Relax your shoulders and take a few slow breaths.";
+        }
+
+
+        if (timeLeft === 15) {
+
+            document.getElementById("instruction").textContent =
+                "Gently stretch your neck and shoulders.";
+        }
+
+
+        if (timeLeft <= 0) {
+
+            clearInterval(timerInterval);
+
+            document.getElementById("timer").textContent =
+                "✓";
+
+            document.getElementById("instruction").textContent =
+                "Break complete. Let's see how your activity responds.";
+
+            document.getElementById("startButton").textContent =
+    "See Recovery Results";
+
+document.getElementById("startButton").disabled = false;
+
+document.getElementById("startButton").onclick =
+    function() {
+        window.location.href = "/recovery";
+    };
+        }
+
+    }, 1000);
+}
+
+
+function skipBreak() {
+
+    window.location.href = "/";
+
+}
+
+</script>
+
+</body>
+
+</html>

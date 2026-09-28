@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WorkSync - History</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>WorkSync History</h1>
+        <p>Recent activity and wellness trends</p>
+    </div>
+
+    <div class="history-summary">
+
+        <div class="summary-card">
+            <span>Total Samples</span>
+            <strong>{{ history|length }}</strong>
+        </div>
+
+        <div class="summary-card">
+            <span>Average WPM</span>
+            <strong>{{ avg_wpm }}</strong>
+        </div>
+
+        <div class="summary-card">
+            <span>Average Corrections</span>
+            <strong>{{ avg_correction }}%</strong>
+        </div>
+
+        <div class="summary-card">
+            <span>Peak Fatigue</span>
+            <strong>{{ peak_fatigue }}/100</strong>
+        </div>
+
+    </div>
+
+
+    <div class="recommendation-card">
+
+        <h2>Recent Activity</h2>
+
+        {% if history %}
+
+        <div class="history-table-wrapper">
+
+            <table class="history-table">
+
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>WPM</th>
+                        <th>Corrections</th>
+                        <th>Mouse Activity</th>
+                        <th>Work Duration</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in history %}
+
+                    <tr>
+
+                        <td>
+                            {{ item.timestamp[:19].replace("T", " ") }}
+                        </td>
+
+                        <td>
+                            {{ "%.1f"|format(item.wpm) }}
+                        </td>
+
+                        <td>
+                            {{ "%.1f"|format(item.correction_rate) }}%
+                        </td>
+
+                        <td>
+                            {{ item.mouse_movements }}
+                        </td>
+
+                        <td>
+                            {{ "%.1f"|format(item.work_minutes) }} min
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <p class="empty-history">
+            No activity has been recorded yet.
+        </p>
+
+        {% endif %}
+
+        <button onclick="window.location.href='/'">
+            Back to Dashboard
+        </button>
+
+    </div>
+
+</div>
+
+</body>
+</html>

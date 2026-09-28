@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkSync - Recovery Results</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="break-card">
+
+        <div class="break-icon">✓</div>
+
+        <h1>Recovery Results</h1>
+
+        <p class="break-message">
+            Here's how your activity changed after your recovery break.
+        </p>
+
+        <div class="baseline-grid">
+
+            <div>
+                <strong>{{ before_wpm }}</strong>
+                <span>WPM Before Break</span>
+            </div>
+
+            <div>
+                <strong>{{ after_wpm }}</strong>
+                <span>WPM After Break</span>
+            </div>
+
+            <div>
+                <strong>{{ baseline_wpm }}</strong>
+                <span>Personal Baseline</span>
+            </div>
+
+        </div>
+
+        <p class="instruction" id="recoveryMessage">
+            Comparing your recent activity with your personal baseline...
+        </p>
+
+        <button onclick="window.location.href='/'">
+            Return to Dashboard
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+    const before = {{ before_wpm }};
+    const after = {{ after_wpm }};
+    const baseline = {{ baseline_wpm }};
+
+    const message =
+        document.getElementById("recoveryMessage");
+
+    if (baseline > 0) {
+
+        const beforeDifference =
+            Math.abs(baseline - before);
+
+        const afterDifference =
+            Math.abs(baseline - after);
+
+        if (afterDifference < beforeDifference) {
+
+            message.textContent =
+                "Your activity moved closer to your personal baseline after the break.";
+
+        } else if (afterDifference > beforeDifference) {
+
+            message.textContent =
+                "Your activity has not yet moved closer to your personal baseline. Consider taking more recovery time.";
+
+        } else {
+
+            message.textContent =
+                "Your activity remained at a similar distance from your personal baseline.";
+        }
+    }
+
+</script>
+
+</body>
+</html>

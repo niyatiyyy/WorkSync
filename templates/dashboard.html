@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WorkSync Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h1>WorkSync</h1>
+            <p>Personal workplace wellness assistant</p>
+        </div>
+
+        <div class="status">
+            ● Monitoring activity
+        </div>
+    </div>
+
+
+    <!-- METRIC CARDS -->
+    <div class="metrics-grid">
+
+        <div class="card">
+            <h3>Typing Speed</h3>
+            <div class="metric">
+                <span id="wpm">Loading...</span>
+                <small>WPM</small>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <h3>Correction Rate</h3>
+            <div class="metric">
+                <span id="correction_rate">Loading...</span>
+                <small>%</small>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <h3>Work Duration</h3>
+            <div class="metric">
+                <span id="work_minutes">Loading...</span>
+                <small>min</small>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <h3>Mouse Clicks</h3>
+            <div class="metric">
+                <span id="mouse_clicks">Loading...</span>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <h3>Mouse Activity</h3>
+            <div class="metric">
+                <span id="mouse_movements">Loading...</span>
+            </div>
+        </div>
+
+    </div>
+    <div class="baseline-card">
+    <h2>Your Personal Baseline</h2>
+
+    <div id="baseline-status">
+        WorkSync is learning your activity pattern...
+    </div>
+
+    <div class="baseline-grid">
+        <div>
+            <strong id="baseline-wpm">--</strong>
+            <span>Baseline WPM</span>
+        </div>
+
+        <div>
+            <strong id="baseline-correction">--</strong>
+            <span>Baseline Correction Rate</span>
+        </div>
+
+        <div>
+            <strong id="baseline-mouse">--</strong>
+            <span>Baseline Mouse Activity</span>
+        </div>
+    </div>
+</div>
+
+
+    <!-- FATIGUE SECTION -->
+    <div class="fatigue-card">
+
+        <h2>Fatigue Indicator</h2>
+
+        <div class="fatigue-score">
+            <span id="fatigue_score">Loading...</span>
+            <span>/ 100</span>
+        </div>
+
+        <div class="fatigue-level">
+            <span id="fatigue_level">Loading...</span>
+        </div>
+
+        <p>
+            Based on changes in your recent activity compared
+            with your current baseline.
+        </p>
+
+    </div>
+
+
+    <!-- BREAK RECOMMENDATION -->
+    <div class="recommendation-card">
+    <h2>WorkSync Insight</h2>
+
+    <p id="recommendation">
+        WorkSync is monitoring your activity.
+    </p>
+
+    <button id="breakButton"
+            onclick="checkBreak()"
+            style="display: none;">
+        Take a Recovery Break
+    </button>
+    <button onclick="window.location.href='/history'">
+    View History
+</button>
+</div>
+
+
+</div>
+
+
+<script>
+    async function updateDashboard() {
+        const response = await fetch("/api/metrics");
+        const data = await response.json();
+
+        document.getElementById("wpm").textContent = data.wpm;
+        document.getElementById("correction_rate").textContent = data.correction_rate;
+        document.getElementById("work_minutes").textContent = data.work_minutes;
+        document.getElementById("mouse_clicks").textContent = data.mouse_clicks;
+        document.getElementById("mouse_movements").textContent = data.mouse_movements;
+        document.getElementById("fatigue_score").textContent = data.fatigue_score;
+        document.getElementById("fatigue_level").textContent = data.fatigue_level;
+
+        if (data.baseline_ready) {
+            document.getElementById("baseline-status").textContent =
+                "✓ Your personal activity baseline is calibrated.";
+
+            document.getElementById("baseline-wpm").textContent =
+                data.baseline_wpm + " WPM";
+
+            document.getElementById("baseline-correction").textContent =
+                data.baseline_correction_rate + "%";
+
+            document.getElementById("baseline-mouse").textContent =
+                data.baseline_mouse_movements;
+        } else {
+            document.getElementById("baseline-status").textContent =
+                "Calibrating... " +
+                data.samples + " / " +
+                data.samples_needed +
+                " activity samples collected.";
+        }
+
+        const recommendation =
+            document.getElementById("recommendation");
+
+        const breakButton =
+            document.getElementById("breakButton");
+
+        if (data.fatigue_score >= 60) {
+
+            recommendation.textContent =
+                "Your recent activity has remained different from your personal baseline. A short recovery break may help.";
+
+            breakButton.style.display = "inline-block";
+
+        } else if (data.fatigue_score >= 30) {
+
+            recommendation.textContent =
+                "Your activity shows some changes. Consider taking a short break if you feel tired.";
+
+            breakButton.style.display = "none";
+
+        } else {
+
+            recommendation.textContent =
+                "Your recent activity is close to your personal baseline.";
+
+            breakButton.style.display = "none";
+        }
+    }
+
+    function checkBreak() {
+        const score = parseInt(
+            document.getElementById("fatigue_score").textContent
+        );
+
+        if (score >= 60) {
+            window.location.href = "/break";
+        } else {
+            alert(
+                "A recovery break is not currently recommended based on your activity."
+            );
+        }
+    }
+
+    updateDashboard();
+    setInterval(updateDashboard, 5000);
+</script>
+
+</body>
+</html>
